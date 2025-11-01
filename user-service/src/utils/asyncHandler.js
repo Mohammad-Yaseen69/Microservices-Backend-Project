@@ -1,6 +1,6 @@
 import Hashids from "hashids"
-import logger from "./logger";
-import ApiError from "./apiError";
+import logger from "./logger.js";
+import ApiError from "./apiError.js";
 
 const asyncHandler = (fn) => async (req, res, next) => {
     try {
