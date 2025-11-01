@@ -12,7 +12,7 @@ const asyncHandler = (fn) => async (req, res, next) => {
         const errorId = `ERR-${hashids.encode(1, 2, 3)}`;
 
         if (error instanceof ApiError) {
-            logger.error({
+            logger.warn({
                 message: error.message,
                 errorId: errorId,
                 apiInformation: {
@@ -42,7 +42,7 @@ const asyncHandler = (fn) => async (req, res, next) => {
                 }
             })
 
-            message = `Unable to process this request Evend Id: ${errorId}`
+            message = `Unable to process this request Event Id: ${errorId}`
         }
 
 

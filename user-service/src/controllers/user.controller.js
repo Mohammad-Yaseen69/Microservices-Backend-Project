@@ -13,7 +13,8 @@ export const registerUser = asyncHandler(async (req, res) => {
     const { error } = validateRegistration(req.body)
 
     if (error) {
-        throw new ApiError(error.details[0].message, 400, error.details.map((err) => err.message))
+        const message = error.details.map(err => err.message.replace(/["]/g, '')).join(', ');
+        throw new ApiError(message, 400, error.details.map((err) => err.message))
     }
 
 
@@ -59,10 +60,11 @@ export const login = asyncHandler(async (req, res) => {
 
     const { error } = validateLogin(req.body)
     if (error) {
-        throw new ApiError(error.details[0].message, 400, error.details.map((err) => err.message))
+        const message = error.details.map(err => err.message.replace(/["]/g, '')).join(', ');
+        throw new ApiError(message, 400, error.details.map((err) => err.message))
     }
 
-    const user = await User.findOne({ email: email }).select("-password")
+    const user = await User.findOne({ email: email })
 
     if (!user) {
         throw new ApiError("Invalid credentials", 404)
@@ -79,6 +81,7 @@ export const login = asyncHandler(async (req, res) => {
 
     res.cookie("refreshToken", refreshToken, cookiesSettings)
 
+    delete user.password
     return res.status(200).json(
         new ApiResponse(200, "Login successful", {
             accessToken,
