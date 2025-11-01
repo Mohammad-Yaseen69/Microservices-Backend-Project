@@ -42,17 +42,30 @@ userModel.methods.comparePassword = async function (candidatePassword) {
     return argon2.verify(this.password, candidatePassword)
 }
 
-userModel.methods.generateJWT = async () => {
+userModel.methods.generateAccessToken = async function () {
     return jwt.sign(
         {
             id: this._id,
         },
         process.env.JWT_SECRET,
         {
-            expiresIn: "7d",
+            expiresIn: "30m",
         }
     )
-
 }
+
+userModel.methods.generateRefreshToken = async function () {
+    return jwt.sign(
+        {
+            id: this._id,
+            username: this.username
+        },
+        process.env.JWT_SECRET,
+        {
+            expiresIn: "30d",
+        }
+    )
+}
+
 
 export const User = mongoose.model("User", userModel)
