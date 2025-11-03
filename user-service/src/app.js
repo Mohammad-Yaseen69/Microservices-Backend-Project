@@ -1,35 +1,20 @@
 import express from "express"
-import cors from "cors"
 import cookieParser from "cookie-parser"
 import helmet from "helmet"
 import { RateLimiterRedis } from 'rate-limiter-flexible'
 import { rateLimit } from "express-rate-limit"
 import { RedisStore } from "rate-limit-redis"
 import Redis from "ioredis"
+import logger from "./utils/logger.js"
+
 
 
 
 const app = express()
 export const redisClient = new Redis(process.env.REDIS_URL)
 
-const allowedOrigins = [
-
-];
-
 
 app.use(express.json())
-const corsOptions = {
-    origin: function (origin, callback) {
-        if (!origin) return callback(null, true);
-        if (allowedOrigins.includes(origin)) {
-            return callback(null, true);
-        } else {
-            return callback(new Error("Not allowed by CORS"));
-        }
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
-};
 app.use(helmet())
 app.use(cookieParser())
 
@@ -46,7 +31,7 @@ app.use(async (req, res, next) => {
         next()
     } catch {
         logger.warn(`Redis rate limit exceed for IP: ${req.ip}`)
-        res.status(429).json({
+        return res.status(429).json({
             success: false,
             message: "Too many requests. Please try again later."
         })
@@ -73,9 +58,13 @@ const expressRoutesRateLimiter = rateLimit({
 app.use("/api/users/register", expressRoutesRateLimiter)
 app.use("/api/users/login", expressRoutesRateLimiter)
 
-import userRoutes from "./routes/user.routes.js"
-import logger from "./utils/logger.js"
+app.use((req, res, next) => {
+    logger.info(`Incoming request: ${req.method} ${req.originalUrl} from IP: ${req.ip}`);
+    next();
+});
 
-app.use("/api/users", cors(corsOptions), userRoutes)
+import userRoutes from "./routes/user.routes.js"
+
+app.use("/api/users", userRoutes)
 
 export default app
