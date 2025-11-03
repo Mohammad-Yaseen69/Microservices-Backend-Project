@@ -26,11 +26,11 @@ export const registerUser = asyncHandler(async (req, res) => {
     })
 
     if (userExistCheck) {
-        if (userExistCheck.some(user => user.email === email)) {
+        if (userExistCheck.email === email) {
             throw new ApiError("Email already in use", 400)
         }
 
-        if (userExistCheck.some(user => user.username === username)) {
+        if (userExistCheck.username === username) {
             throw new ApiError("Username already in use", 400)
         }
     }
