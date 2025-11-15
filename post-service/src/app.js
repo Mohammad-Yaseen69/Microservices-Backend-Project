@@ -55,7 +55,7 @@ app.use((req, res, next) => {
     next();
 });
 
-// app.use(expressRoutesRateLimiter)
+app.use(expressRoutesRateLimiter)
 app.use("/api/posts", PostRoutes)
 
 export default app

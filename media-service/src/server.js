@@ -1,11 +1,10 @@
 import dotenv from "dotenv"
+dotenv.config()
+
 import app from "./app.js"
 import { connectDb } from "./db/index.js"
 
-
-dotenv.config()
-
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT || 3004
 
 const startServer = async () => {
     await connectDb()

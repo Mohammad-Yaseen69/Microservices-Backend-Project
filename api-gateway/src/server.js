@@ -92,7 +92,8 @@ const proxyOptions = (service) => ({
             errorIn: service + "_service",
             services: {
                 user: process.env.USER_SERVICE_URL,
-                post: process.env.POST_SERVICE_URL
+                post: process.env.POST_SERVICE_URL,
+                media: process.env.MEDIA_SERVICE_URL
             }
         });
 
@@ -109,6 +110,7 @@ app.use(express.json())
 
 app.use("/api/users", verifyToken, proxy(process.env.USER_SERVICE_URL, proxyOptions("user")))
 app.use("/api/posts", verifyToken, proxy(process.env.POST_SERVICE_URL, proxyOptions("post")))
+app.use("/api/media", verifyToken, proxy(process.env.MEDIA_SERVICE_URL, proxyOptions("media")))
 
 
 app.get('/health', (req, res) => {
@@ -121,5 +123,5 @@ app.listen(PORT, () => {
     console.log(`API Gateway is running on port ${PORT}`)
     console.log(`User Service URL: ${process.env.USER_SERVICE_URL}`)
     console.log(`POST Service URL: ${process.env.POST_SERVICE_URL}`)
-    console.log(`Make sure user service is running!`)
+    console.log(`Media Service URL: ${process.env.MEDIA_SERVICE_URL}`)
 })
