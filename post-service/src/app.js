@@ -34,7 +34,7 @@ app.use(async (req, res, next) => {
 })
 
 const expressRoutesRateLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
+    windowMs: 1 * 60 * 1000,
     limit: 100,
     standardHeaders: true,
     legacyHeaders: false,
@@ -55,7 +55,7 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use(expressRoutesRateLimiter)
+// app.use(expressRoutesRateLimiter)
 app.use("/api/posts", PostRoutes)
 
 export default app
