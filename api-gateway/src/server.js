@@ -64,7 +64,7 @@ app.use((req, res, next) => {
     next();
 });
 
-const proxyOptions = {
+const proxyOptions = (service) => ({
     proxyReqPathResolver: (req) => {
         return req.originalUrl;
     },
@@ -73,7 +73,6 @@ const proxyOptions = {
     },
     proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
         proxyReqOpts.headers['Content-Type'] = srcReq.headers['content-type'] || 'application/json';
-        // proxyReqOpts.headers['x-user-id'] = srcReq.headers['x-user-id']
         return proxyReqOpts;
     },
     proxyErrorHandler: (err, res, next) => {
@@ -87,7 +86,14 @@ const proxyOptions = {
                 code: err.code
             },
             errorId: errorId,
-            userServiceUrl: process.env.USER_SERVICE_URL
+            requestUrl: res.req?.originalUrl,
+            requestMethod: res.req?.method,
+            requestHeaders: res.req?.headers,
+            errorIn: service + "_service",
+            services: {
+                user: process.env.USER_SERVICE_URL,
+                post: process.env.POST_SERVICE_URL
+            }
         });
 
         if (!res.headersSent) {
@@ -97,11 +103,12 @@ const proxyOptions = {
             });
         }
     },
-}
+})
 
 app.use(express.json())
 
-app.use("/api/users", verifyToken, proxy(process.env.USER_SERVICE_URL, proxyOptions))
+app.use("/api/users", verifyToken, proxy(process.env.USER_SERVICE_URL, proxyOptions("user")))
+app.use("/api/posts", verifyToken, proxy(process.env.POST_SERVICE_URL, proxyOptions("post")))
 
 
 app.get('/health', (req, res) => {
@@ -113,5 +120,6 @@ const PORT = process.env.PORT || 3000
 app.listen(PORT, () => {
     console.log(`API Gateway is running on port ${PORT}`)
     console.log(`User Service URL: ${process.env.USER_SERVICE_URL}`)
+    console.log(`POST Service URL: ${process.env.POST_SERVICE_URL}`)
     console.log(`Make sure user service is running!`)
 })

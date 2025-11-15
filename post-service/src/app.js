@@ -5,6 +5,7 @@ import { rateLimit } from "express-rate-limit"
 import { RedisStore } from "rate-limit-redis"
 import Redis from "ioredis"
 import logger from "./utils/logger.js"
+import PostRoutes from "./routes/post.routes.js"
 
 const app = express()
 export const redisClient = new Redis(process.env.REDIS_URL)
@@ -49,12 +50,12 @@ const expressRoutesRateLimiter = rateLimit({
     })
 })
 
-app.use(expressRoutesRateLimiter)
-
 app.use((req, res, next) => {
     logger.info(`Incoming request: ${req.method} ${req.originalUrl} from IP: ${req.ip}`);
     next();
 });
 
+app.use(expressRoutesRateLimiter)
+app.use("/api/posts", PostRoutes)
 
 export default app

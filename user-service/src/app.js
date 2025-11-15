@@ -6,13 +6,11 @@ import { rateLimit } from "express-rate-limit"
 import { RedisStore } from "rate-limit-redis"
 import Redis from "ioredis"
 import logger from "./utils/logger.js"
-
-
+import userRoutes from "./routes/user.routes.js"
 
 
 const app = express()
 export const redisClient = new Redis(process.env.REDIS_URL)
-
 
 app.use(express.json())
 app.use(helmet())
@@ -63,7 +61,6 @@ app.use((req, res, next) => {
     next();
 });
 
-import userRoutes from "./routes/user.routes.js"
 
 app.use("/api/users", userRoutes)
 
