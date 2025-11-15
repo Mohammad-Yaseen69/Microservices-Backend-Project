@@ -8,6 +8,7 @@ import { rateLimit } from "express-rate-limit"
 import { RedisStore } from "rate-limit-redis"
 import proxy from "express-http-proxy"
 import Hashids from "hashids"
+import { verifyToken } from "./middleware/verifyToken.js"
 
 dotenv.config()
 
@@ -72,6 +73,7 @@ const proxyOptions = {
     },
     proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
         proxyReqOpts.headers['Content-Type'] = srcReq.headers['content-type'] || 'application/json';
+        // proxyReqOpts.headers['x-user-id'] = srcReq.headers['x-user-id']
         return proxyReqOpts;
     },
     proxyErrorHandler: (err, res, next) => {
@@ -97,9 +99,10 @@ const proxyOptions = {
     },
 }
 
-app.use("/api/users", proxy(process.env.USER_SERVICE_URL, proxyOptions))
-
 app.use(express.json())
+
+app.use("/api/users", verifyToken, proxy(process.env.USER_SERVICE_URL, proxyOptions))
+
 
 app.get('/health', (req, res) => {
     res.json({ status: 'ok', service: 'api-gateway' })
