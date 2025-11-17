@@ -18,7 +18,7 @@ const invalidateCache = async (input) => {
 }
 
 export const createPost = asyncHandler(async (req, res) => {
-    const { title, content, tags = [] } = req.body || {};
+    const { title, content, tags = [], mediaIds } = req.body || {};
 
     const { message, errors } = postCreationValidation(req.body || {})
 
@@ -30,7 +30,8 @@ export const createPost = asyncHandler(async (req, res) => {
         title,
         content,
         tags,
-        user: req.user.userId
+        user: req.user.userId,
+        mediaIds: mediaIds || []
     });
 
     await invalidateCache(post?._id)

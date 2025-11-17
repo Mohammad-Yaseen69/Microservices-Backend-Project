@@ -6,6 +6,7 @@ export const postCreationValidation = (data) => {
         title: joi.string().min(3).max(30).required(),
         content: joi.string().min(10).required(),
         tags: joi.array().items(joi.string()),
+        mediaIds: joi.array().items(joi.string()),
     })
 
     const { error } = schema.validate(data)
