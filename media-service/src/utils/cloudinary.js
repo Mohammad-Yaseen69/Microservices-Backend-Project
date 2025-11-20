@@ -36,4 +36,18 @@ const uploadFile = (file) => {
     })
 }
 
-export { uploadFile }
+const deleteFile = (publicId) => {
+    initCloudinary()
+    return new Promise((resolve, reject) => {
+        cloudinary.uploader.destroy(publicId, (error, result) => {
+            if (error) {
+                logger.error("Error while deleting file", error)
+                reject(error)
+            } else {
+                resolve(result)
+            }
+        })
+    })
+}
+
+export { uploadFile, deleteFile }

@@ -4,6 +4,7 @@ import { postCreationValidation, postUpdateValidation } from "../utils/validator
 import { Post } from "../models/post.model.js";
 import ApiResponse from "../utils/apiResponse.js";
 import { redisClient } from "../app.js";
+import { publishEvent } from "../utils/rabbitMq.js";
 
 const invalidateCache = async (input) => {
     const keys = await redisClient.keys("posts:*")
@@ -124,6 +125,11 @@ export const deletePost = asyncHandler(async (req, res) => {
         throw new ApiError("Unauthorized to delete this post", 403)
     }
 
+    await publishEvent("post.deleted", {
+        user: req?.user?.userId,
+        postId: postId,
+        mediaIds: post?.mediaIds || []
+    })
     await Post.findByIdAndDelete(postId)
     await invalidateCache(postId)
 
