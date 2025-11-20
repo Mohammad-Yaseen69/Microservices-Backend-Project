@@ -3,9 +3,7 @@ import express from "express"
 import logger from "./utils/logger.js"
 import cors from "cors"
 import helmet from "helmet"
-import Redis from 'ioredis'
 import { rateLimit } from "express-rate-limit"
-import { RedisStore } from "rate-limit-redis"
 import proxy from "express-http-proxy"
 import Hashids from "hashids"
 import { verifyToken } from "./middleware/verifyToken.js"
@@ -14,7 +12,6 @@ dotenv.config()
 
 const app = express()
 
-export const redisClient = new Redis(process.env.REDIS_URL)
 
 const allowedOrigins = [
     "http://localhost:3000",
@@ -46,10 +43,7 @@ const rateLimitOptions = rateLimit({
             success: false,
             message: "Too many requests. Please try again later."
         })
-    },
-    store: new RedisStore({
-        sendCommand: (...args) => redisClient.call(...args)
-    })
+    }
 })
 
 app.use(helmet({

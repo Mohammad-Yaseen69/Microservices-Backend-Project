@@ -21,23 +21,27 @@ export const getRabbitMQChannel = () => {
     return channel
 }
 
-export const publishEvent = async (routingKey, content) => {
+export const consumeEvent = async (routingKey, callback) => {
     try {
 
         if (!channel) {
             await connectRabbitMQ()
         }
-        const messageBuffer = Buffer.from(JSON.stringify(content));
 
-        const success = await channel.publish(EXCHANGE, routingKey, messageBuffer)
+        const q = await channel.assertQueue("", { exclusive: true })
+        await channel.bindQueue(q.queue, EXCHANGE, routingKey)
 
-        if (success) {
-            console.log(`Event with routing key: ${routingKey} published successfully`)
-        } else {
-            logger.error(`Failed to publish event with routing key: ${routingKey}`)
-        }
+        await channel.consume(q.queue, (msg) => {
+            if (msg) {
+                const content = JSON.parse(msg.content.toString())
+                callback(content)
+                channel.ack(msg)
+            }
+        })
+
+        console.log("Event consumed with routing key:", routingKey)
 
     } catch (error) {
-        logger.error("Something went wrong while publishing event error:", error)
+        logger.error("Something went wrong while consuming event error:", error)
     }
 }
