@@ -44,6 +44,7 @@ const deleteFile = (publicId) => {
                 logger.error("Error while deleting file", error)
                 reject(error)
             } else {
+                logger.info(`Media with this publid id: ${publicId} is deleted`)
                 resolve(result)
             }
         })
