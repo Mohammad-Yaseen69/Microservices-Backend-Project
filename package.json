@@ -1,0 +1,24 @@
+{
+  "name": "microservices",
+  "version": "1.0.0",
+  "main": "index.js",
+  "workspaces": [
+    "user-service",
+    "media-service",
+    "api-gateway",
+    "search-service",
+    "post-service"
+  ],
+  "scripts": {
+    "dev": "turbo run dev --parallel",
+    "build": "turbo run build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "turbo": "^2.6.1"
+  },
+  "packageManager": "npm@10.8.2"
+}
