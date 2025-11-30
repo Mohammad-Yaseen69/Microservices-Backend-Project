@@ -5,26 +5,13 @@ services:
     build: ./api-gateway
     ports:
       - "3000:3000"
-    environment:
-      USER_SERVICE_URL: http://user-service:3001
-      POST_SERVICE_URL: http://post-service:3002
-      MEDIA_SERVICE_URL: http://media-service:3004
-    depends_on:
-      - user-service
-      - post-service
-      - media-service
-
+    env_file: ./api-gateway/.env.production
   user-service:
     build: ./user-service
-    environment:
-      PORT: 3001
-
-  post-service:
-    build: ./post-service
-    environment:
-      PORT: 3002
-
+    env_file: ./user-service/.env
   media-service:
     build: ./media-service
-    environment:
-      PORT: 3004
+    env_file: ./media-service/.env
+  post-service:
+    build: ./post-service
+    env_file: ./post-service/.env
