@@ -1,5 +1,0 @@
-node_modules
-.env
-eslint.config.mjs
-combined.log
-error.log
